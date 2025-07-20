@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Mask Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            min-height: 100vh;
+        }
+        .upload-btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .result-img {
+            transition: transform 0.3s ease;
+        }
+        .result-img:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 sm:p-6">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 sm:p-8">
+        <h1 class="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-6">
+            Face Mask Detection
+        </h1>
+        <div class="upload-form mb-8">
+            <form method="post" enctype="multipart/form-data" class="flex flex-col items-center space-y-4">
+                <label for="file" class="text-gray-600 text-sm font-medium">
+                    Upload an image to detect face masks
+                </label>
+                <input type="file" name="file" id="file" accept="image/*" required
+                       class="block w-full text-sm text-gray-500
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-md file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-blue-50 file:text-blue-700
+                              hover:file:bg-blue-100">
+                <button type="submit"
+                        class="upload-btn bg-blue-600 text-white font-semibold py-2 px-6 rounded-md
+                               transition duration-300 ease-in-out transform">
+                    Upload and Analyze
+                </button>
+            </form>
+        </div>
+        {% if error %}
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md mb-6">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+        {% if output_image %}
+            <div class="result bg-gray-50 p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Detection Results</h2>
+                <div class="space-y-2 text-gray-700">
+                    {% if detections %}
+                        <ul class="list-disc list-inside">
+                            {% for detection in detections %}
+                                <li><strong>{{ detection.label }}</strong> (Confidence: {{ detection.confidence|round(2) }})</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No face masks detected.</p>
+                    {% endif %}
+                </div>
+                <img src="{{ url_for('serve_output', filename=output_image) }}"
+                     alt="Detection Result"
+                     class="result-img mt-6 rounded-lg shadow-lg max-w-full h-auto">
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
